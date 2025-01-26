@@ -1,10 +1,20 @@
 <script>
-    import { deviceTypes } from "../../stores/deviceStore.js";
-  </script>
-  
+  import { deviceTypes } from "../../stores/deviceStore";
+  import { onMount } from 'svelte';
+
+  onMount(async () => {
+    console.log('Component mounted');
+    await deviceTypes.initialize();
+    console.log('Store initialized:', $deviceTypes);
+  });
+
+  $: console.log('deviceTypes updated:', $deviceTypes);
+</script>
+
   <form class="config-form">
-    <div class="configurations-section">
-      <h2>Chart Controls</h2>
+  <div class="configurations-section">
+    <h2>Chart Controls</h2>
+    {#if $deviceTypes}
       {#each Object.entries($deviceTypes) as [type, config]}
         <div class="form-group">
           <label for={type}>{config.label}</label>
@@ -15,8 +25,9 @@
           </select>
         </div>
       {/each}
-    </div>
-  </form>
+    {/if}
+  </div>
+</form>
   
   <style>
     .config-form {
