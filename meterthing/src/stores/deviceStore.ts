@@ -49,9 +49,10 @@ function createDeviceStore() {
 
   return {
     subscribe: store.subscribe,
+    set: store.set,        // Add this line
+    update: store.update,  // Keep this line
     initialize
   };
 }
-
 
 export const deviceTypes = createDeviceStore();
