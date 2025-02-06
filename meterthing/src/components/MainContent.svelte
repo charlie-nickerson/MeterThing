@@ -6,7 +6,6 @@
   <main class="main-content">
     <div class="chart-grid">
       <div class="chart-card">
-        <h2>Temperature</h2>
         <TemperatureChart />
       </div>
     </div>

@@ -1,3 +1,4 @@
+<!-- Sidebar.svelte -->
 <script>
     import DeviceSelection from "./Sidebar/DeviceSelection.svelte";
     import DateRange from "./Sidebar/DateRange.svelte";

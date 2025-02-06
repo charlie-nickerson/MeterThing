@@ -1,16 +1,10 @@
+<!-- src/components/Sidebar/DateRange.svelte -->
 <script>
-  import { writable } from "svelte/store";
-
-  // Store for the date range
-  export const dateRange = writable({
-    start: new Date().toISOString().split("T")[0], // Today as default
-    end: new Date().toISOString().split("T")[0],
-  });
+  import { dateRange } from "../../stores/dateStore";
 </script>
 
 <div class="date-range-picker">
   <h2>Date Range</h2>
-
   <div class="form-group">
     <label for="start-date">Start Date</label>
     <input
@@ -20,7 +14,6 @@
       max={$dateRange.end}
     />
   </div>
-
   <div class="form-group">
     <label for="end-date">End Date</label>
     <input
@@ -37,7 +30,6 @@
     padding: 1rem;
     font-family: "Inter", sans-serif;
   }
-
   h2 {
     font-size: 0.875rem;
     text-transform: uppercase;
@@ -46,11 +38,9 @@
     margin-bottom: 1.5rem;
     font-weight: 600;
   }
-
   .form-group {
     margin-bottom: 1.25rem;
   }
-
   label {
     display: block;
     margin-bottom: 0.5rem;
@@ -58,7 +48,6 @@
     font-size: 0.875rem;
     font-weight: 500;
   }
-
   input[type="date"] {
     width: 100%;
     padding: 0.5rem;
@@ -70,23 +59,19 @@
     font-family: "Inter", sans-serif;
     transition: all 0.15s ease;
   }
-
   input[type="date"]:hover {
     border-color: #475569;
   }
-
   input[type="date"]:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 1px #3b82f6;
   }
-
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     opacity: 0.6;
     cursor: pointer;
   }
-
   input[type="date"]::-webkit-calendar-picker-indicator:hover {
     opacity: 0.8;
   }

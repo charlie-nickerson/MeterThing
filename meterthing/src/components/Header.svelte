@@ -1,3 +1,5 @@
+<!-- Header.svelte -->
+
 <svelte:head>
   <!-- Option 1: Inter -->
   <link
