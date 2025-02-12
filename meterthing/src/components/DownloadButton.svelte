@@ -1,6 +1,7 @@
 <!-- src/components/DownloadButton.svelte -->
 <script lang="ts">
-    // Define interfaces for different data types
+    import { DownloadCloud } from 'lucide-svelte';
+    
     interface BaseData {
       Timestamp: string;
       DeviceID: string;
@@ -20,13 +21,11 @@
   
     type SensorData = TemperatureData | TurbidityData | WaterDetectionData;
   
-    // Props
     export let data: SensorData[] = [];
     export let disabled: boolean = false;
     export let dataType: 'temperature' | 'turbidity' | 'waterDetection' = 'temperature';
     export let fileName: string = 'sensor-data';
   
-    // Function to get CSV headers based on data type
     function getHeaders(type: typeof dataType): string[] {
       const baseHeaders = ['Timestamp', 'DeviceID'];
       switch (type) {
@@ -41,7 +40,6 @@
       }
     }
   
-    // Function to format row data based on data type
     function formatRowData(row: SensorData, type: typeof dataType): string[] {
       const baseData = [row.Timestamp, row.DeviceID];
       
@@ -57,7 +55,6 @@
       }
     }
   
-    // Function to escape CSV values properly
     function escapeCSV(value: string): string {
       if (value.includes(',') || value.includes('"') || value.includes('\n')) {
         return `"${value.replace(/"/g, '""')}"`;
@@ -68,10 +65,8 @@
     function downloadCSV() {
       if (!data || data.length === 0) return;
       
-      // Get headers for the current data type
       const headers = getHeaders(dataType);
       
-      // Convert data to CSV format
       const csvRows = [
         headers.join(','),
         ...data.map(row => 
@@ -85,7 +80,6 @@
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       
-      // Create download link with formatted filename
       const timestamp = new Date().toISOString().split('T')[0];
       const downloadFileName = `${fileName}-${timestamp}.csv`;
       const url = URL.createObjectURL(blob);
@@ -93,7 +87,6 @@
       link.setAttribute('href', url);
       link.setAttribute('download', downloadFileName);
       
-      // Trigger download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -106,31 +99,38 @@
     class="download-button"
     disabled={disabled || !data.length}
     title={!data.length ? 'No data available to download' : `Download ${dataType} data as CSV`}
+    aria-label="Download data"
   >
-    Download CSV
+    <DownloadCloud
+      size={20}
+      class="icon"
+      color={disabled || !data.length ? '#64748b' : '#e2e8f0'}
+    />
   </button>
   
   <style>
     .download-button {
-      background: #3b82f6;
-      color: white;
+      background: transparent;
       border: none;
       border-radius: 0.375rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+      padding: 0.5rem;
       cursor: pointer;
-      transition: background-color 0.2s;
-      font-family: "Inter", system-ui, sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   
     .download-button:hover:not(:disabled) {
-      background: #2563eb;
+      background: rgba(255, 255, 255, 0.1);
     }
   
     .download-button:disabled {
-      background: #64748b;
       cursor: not-allowed;
-      opacity: 0.7;
+      opacity: 0.5;
+    }
+  
+    .icon {
+      display: block;
     }
   </style>
