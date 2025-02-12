@@ -16,7 +16,6 @@
   
     interface WaterDetectionData extends BaseData {
       WaterDetected: boolean;
-      WaterLevel: number;
     }
   
     type SensorData = TemperatureData | TurbidityData | WaterDetectionData;
@@ -36,7 +35,7 @@
         case 'turbidity':
           return [...baseHeaders, 'Turbidity'];
         case 'waterDetection':
-          return [...baseHeaders, 'WaterDetected', 'WaterLevel'];
+          return [...baseHeaders, 'WaterDetected'];
         default:
           return baseHeaders;
       }
@@ -52,8 +51,7 @@
         case 'turbidity':
           return [...baseData, (row as TurbidityData).Turbidity.toString()];
         case 'waterDetection':
-          const waterData = row as WaterDetectionData;
-          return [...baseData, waterData.WaterDetected.toString(), waterData.WaterLevel.toString()];
+          return [...baseData, (row as WaterDetectionData).WaterDetected.toString()];
         default:
           return baseData;
       }
