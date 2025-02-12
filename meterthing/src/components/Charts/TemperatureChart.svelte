@@ -5,6 +5,7 @@
   import { deviceTypes } from '../../stores/deviceStore';
   import { dateRange } from '../../stores/dateStore';
   import type { ChartConfiguration } from 'chart.js';
+  import DownloadButton from '../DownloadButton.svelte';
 
   let chart: Chart;
   let canvas: HTMLCanvasElement;
@@ -12,6 +13,7 @@
   let displayState: 'initial' | 'loading' | 'error' | 'data' = 'initial';
   let errorMessage = '';
   let currentDeviceId: string | undefined;
+  let chartData: any[] = []; // Store the data for the download button
 
   async function fetchTemperatureData(startDate: string, endDate: string, deviceId?: string) {
     if (!deviceId) return null;
@@ -56,12 +58,15 @@
         clearChart();
         errorMessage = 'No data available for selected date range';
         displayState = 'error';
+        chartData = []; // Clear the data
         return;
       }
       
       const sortedData = [...data].sort((a, b) => 
         new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
       );
+      
+      chartData = sortedData; // Store the data for downloading
       
       chart.data.labels = sortedData.map(d => {
         const date = new Date(d.Timestamp);
@@ -77,6 +82,7 @@
       clearChart();
       errorMessage = e.message;
       displayState = 'error';
+      chartData = []; // Clear the data
     }
   }
 
@@ -101,9 +107,14 @@
           label: 'Temperature (°C)',
           data: [],
           borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.3,
-          fill: true
+          backgroundColor: 'rgba(59, 130, 246, 0.05)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#ffffff',
+          pointHoverBorderColor: '#3b82f6',
+          pointHoverBorderWidth: 2
         }]
       },
       options: {
@@ -117,9 +128,13 @@
             position: 'top',
             align: 'end',
             labels: {
-              color: '#e2e8f0',
+              color: '#94a3b8',
               boxWidth: 12,
-              padding: 20
+              padding: 20,
+              font: {
+                family: 'Inter, system-ui, sans-serif',
+                size: 12
+              }
             }
           },
           tooltip: {
@@ -129,18 +144,29 @@
             titleColor: '#e2e8f0',
             bodyColor: '#e2e8f0',
             borderColor: '#334155',
-            borderWidth: 1
+            borderWidth: 1,
+            padding: 12,
+            bodyFont: {
+              family: 'Inter, system-ui, sans-serif'
+            },
+            titleFont: {
+              family: 'Inter, system-ui, sans-serif'
+            }
           }
         },
         scales: {
           x: {
             grid: {
-              color: '#334155'
+              display: false
             },
             ticks: {
-              color: '#94a3b8',
+              color: '#64748b',
               maxRotation: 45,
-              minRotation: 45
+              minRotation: 45,
+              font: {
+                family: 'Inter, system-ui, sans-serif',
+                size: 11
+              }
             }
           },
           y: {
@@ -148,7 +174,11 @@
               color: '#334155'
             },
             ticks: {
-              color: '#94a3b8'
+              color: '#64748b',
+              font: {
+                family: 'Inter, system-ui, sans-serif',
+                size: 11
+              }
             }
           }
         }
@@ -189,6 +219,12 @@
 <div class="chart-wrapper">
   <div class="chart-header">
     <h2>{chartTitle}</h2>
+    <DownloadButton 
+      data={chartData}
+      disabled={displayState !== 'data'}
+      dataType="temperature"
+      fileName="temperature-data"
+    />
   </div>
   <div class="chart-container">
     <canvas bind:this={canvas} class="chart"></canvas>
@@ -209,26 +245,28 @@
 <style>
   .chart-wrapper {
     background: #1f1f23;
-    border: 1px solid #334155;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     overflow: hidden;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.4);
   }
   
   .chart-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #334155;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   h2 {
     font-size: 1.125rem;
     font-weight: 500;
     color: #e2e8f0;
-    font-family: "Inter", sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     margin: 0;
   }
   
   .chart-container {
-    padding: 1rem;
+    padding: 1.5rem;
     height: 350px;
     width: 100%;
     position: relative;
@@ -245,13 +283,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(31, 31, 35, 0.7);
+    background: rgba(31, 31, 35, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2;
-    color: #e2e8f0;
-    font-family: "Inter", sans-serif;
+    color: #94a3b8;
+    font-family: "Inter", system-ui, sans-serif;
     text-align: center;
     padding: 1rem;
   }

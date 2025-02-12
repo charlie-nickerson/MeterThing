@@ -1,5 +1,5 @@
+// src/stores/deviceStore.ts
 import { writable } from 'svelte/store';
-import { fetchDevices } from '../lib/api/deviceAPI';
 
 interface Device {
   name: string;
@@ -11,6 +11,9 @@ interface DeviceConfig {
   label: string;
   devices: string[];
   selected: string;
+  deviceMap: {
+    [name: string]: string;
+  };
 }
 
 interface DeviceTypes {
@@ -18,39 +21,65 @@ interface DeviceTypes {
 }
 
 function createDeviceStore() {
-  const store = writable<DeviceTypes>({});
+  const { subscribe, set, update } = writable<DeviceTypes>({});
+  let initPromise: Promise<void> | null = null;
 
   const initialize = async () => {
-    try {
-      const response = await fetch('/api/devices/list');
-      const data = await response.json();
-      console.log('API response:', data);
-      
-      const deviceTypes = data.result.reduce((acc: DeviceTypes, device: Device) => {
-        console.log('Processing device:', device);
-        const type = device.device_profile_name;
-        if (!acc[type]) {
-          acc[type] = {
-            label: type,
-            devices: [],
-            selected: ''
-          };
-        }
-        acc[type].devices.push(device.name);
-        return acc;
-      }, {});
-      
-      console.log('Final deviceTypes:', deviceTypes);
-      store.set(deviceTypes);
-    } catch (error) {
-      console.error('Failed to fetch devices:', error);
+    // If already initializing, return the existing promise
+    if (initPromise) {
+      return initPromise;
     }
+
+    initPromise = new Promise(async (resolve, reject) => {
+      try {
+        console.log('Fetching devices from API...');
+        const response = await fetch('/api/devices/list');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('API response:', data);
+        
+        if (!Array.isArray(data.result)) {
+          throw new Error('Invalid data format received from API');
+        }
+        
+        const deviceTypes = data.result.reduce((acc: DeviceTypes, device: Device) => {
+          const type = device.device_profile_name;
+          if (!acc[type]) {
+            acc[type] = {
+              label: type,
+              devices: [],
+              selected: '',
+              deviceMap: {}
+            };
+          }
+          acc[type].devices.push(device.name);
+          acc[type].deviceMap[device.name] = device.dev_eui;
+          return acc;
+        }, {});
+        
+        console.log('Final deviceTypes:', deviceTypes);
+        set(deviceTypes);
+        resolve();
+      } catch (error) {
+        console.error('Failed to fetch devices:', error);
+        set({});  // Reset store on error
+        reject(error);
+      } finally {
+        initPromise = null;  // Clear the promise so we can retry
+      }
+    });
+
+    return initPromise;
   };
 
   return {
-    subscribe: store.subscribe,
-    set: store.set,        // Add this line
-    update: store.update,  // Keep this line
+    subscribe,
+    set,
+    update,
     initialize
   };
 }
