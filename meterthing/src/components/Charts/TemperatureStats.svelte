@@ -45,14 +45,14 @@
         const data: TemperatureData[] = await fetchTemperatureData(deviceId);
         
         if (!data || data.length === 0) {
-          sensorStats[statIndex].error = "Not enough data";
+          sensorStats[statIndex].error = "No data available";
           sensorStats = [...sensorStats];
           return;
         }
   
-        // Group temperatures by date
+        // Group temperatures by date using the correct timestamp format
         const dailyTemps = data.reduce((acc, reading) => {
-          const date = reading.Timestamp.split('T')[0];
+          const date = reading.Timestamp.split(' ')[0]; // Split on space instead of 'T'
           if (!acc[date]) {
             acc[date] = [];
           }
@@ -65,7 +65,7 @@
   
         // Need at least 3 days of data to show a meaningful average
         if (dailyMaxes.length < 3) {
-          sensorStats[statIndex].error = "Not enough data";
+          sensorStats[statIndex].error = "Insufficient data (need 3+ days)";
           sensorStats = [...sensorStats];
           return;
         }
