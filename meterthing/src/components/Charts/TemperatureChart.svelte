@@ -198,7 +198,7 @@
       if (temperatureDevice) {
         const [_, config] = temperatureDevice;
         chartTitle = config.selected
-          ? `Temperature Sensor: ${config.selected}`
+          ? `${config.selected}`
           : 'Temperature Chart';
           
         currentDeviceId = config.selected ? config.deviceMap[config.selected] : undefined;
