@@ -111,27 +111,26 @@
   
   <div class="table-container">
     {#if displayState === 'data' && waterData.length > 0}
-      <div class="grid-table-container">
-        <div class="grid-table-header">
+      <div class="data-grid">
+        <!-- Headers -->
+        <div class="header-row">
           <div class="header-cell">Date</div>
           <div class="header-cell">Time</div>
           <div class="header-cell">Water Detected</div>
-          <div class="header-cell">Device ID</div>
         </div>
-        <div class="grid-table-body">
-          {#each waterData as reading}
-            <div class="grid-table-row">
-              <div class="grid-cell">{reading.Date}</div>
-              <div class="grid-cell">{reading.Time}</div>
-              <div class="grid-cell">
-                <span class="{reading.WaterDetected ? 'text-red-500' : 'text-green-500'}">
-                  {reading.WaterDetected.toString()}
-                </span>
-              </div>
-              <div class="grid-cell font-mono">{reading.DeviceID}</div>
+        
+        <!-- Data Rows -->
+        {#each waterData as reading}
+          <div class="data-row">
+            <div class="data-cell">{reading.Date}</div>
+            <div class="data-cell">{reading.Time}</div>
+            <div class="data-cell">
+              <span class="{reading.WaterDetected ? 'text-red-500' : 'text-green-500'}">
+                {reading.WaterDetected.toString()}
+              </span>
             </div>
-          {/each}
-        </div>
+          </div>
+        {/each}
       </div>
     {:else}
       <div class="overlay" class:error={displayState === 'error'}>
@@ -175,6 +174,56 @@
     position: relative;
     min-height: 350px;
   }
+
+  .data-grid {
+    border: 1px solid #2d2d32;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 350px;
+    overflow-y: auto;
+    scrollbar-width: none;  /* For Firefox */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+  }
+
+  .data-grid::-webkit-scrollbar {
+    display: none;  /* For Chrome, Safari and Opera */
+  }
+
+  .header-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: #2d2d32;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-cell {
+    padding: 12px 16px;
+    font-weight: 500;
+    color: #e2e8f0;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .data-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #2d2d32;
+  }
+
+  .data-row:hover {
+    background-color: #2d2d32;
+  }
+
+  .data-cell {
+    padding: 12px 16px;
+    color: #e2e8f0;
+    text-align: center;
+    font-size: 14px;
+  }
   
   .overlay {
     position: absolute;
@@ -195,52 +244,5 @@
   
   .error {
     color: #ef4444;
-  }
-
-  .grid-table-container {
-    width: 100%;
-    border: 1px solid #2d2d32;
-    border-radius: 4px;
-    overflow-x: auto;
-  }
-
-  .grid-table-header {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background-color: #2d2d32;
-    border-bottom: 1px solid #2d2d32;
-  }
-
-  .header-cell {
-    padding: 12px 16px;
-    color: #e2e8f0;
-    font-weight: 500;
-    text-align: left;
-    font-size: 14px;
-  }
-
-  .grid-table-body {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-
-  .grid-table-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid #2d2d32;
-    transition: background-color 0.2s;
-  }
-
-  .grid-table-row:hover {
-    background-color: #2d2d32;
-  }
-
-  .grid-cell {
-    padding: 12px 16px;
-    color: #e2e8f0;
-    font-size: 14px;
-    text-align: left;
-    display: flex;
-    align-items: center;
   }
 </style>
