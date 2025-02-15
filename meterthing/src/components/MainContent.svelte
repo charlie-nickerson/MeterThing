@@ -2,12 +2,14 @@
 <script>
   import TemperatureChart from './Charts/TemperatureChart.svelte';
   import TemperatureStats from './Charts/TemperatureStats.svelte';
+  import WaterDetectionTable from './Charts/WaterDetectionTable.svelte';
 </script>
 
 <main class="main-content">
   <div class="content-wrapper">
     <TemperatureStats />
     <TemperatureChart />
+    <WaterDetectionTable />
   </div>
 </main>
 

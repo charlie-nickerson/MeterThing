@@ -112,6 +112,47 @@ class ChirpStackClient:
         except Exception as e:
             print(f"Error querying DynamoDB: {str(e)}")
             return []
+        
+    def query_water_data(self, start_time=None, end_time=None, device_id="a8610a3432436a0f"):
+        """
+        Query water detection data from DynamoDB for a specific device and time range.
+        """
+        if not device_id:
+            raise ValueError("device_id cannot be empty")
+        
+        if not self.dynamodb:
+            raise RuntimeError("AWS credentials not loaded. Call load_aws_credentials() first")
+        
+        try:
+            table = self.dynamodb.Table('WaterDetectionTable')
+            
+            if not start_time:
+                end_time = datetime.now()
+                start_time = end_time - timedelta(hours=24)
+            
+            start_timestamp = start_time.strftime('%Y-%m-%d %H:%M:%S')
+            end_timestamp = end_time.strftime('%Y-%m-%d %H:%M:%S')
+            
+            query_params = {
+                'KeyConditionExpression': 
+                    Key('DeviceID').eq(device_id) & 
+                    Key('Timestamp').between(start_timestamp, end_timestamp),
+                'ScanIndexForward': True
+            }
+            
+            response = table.query(**query_params)
+            items = response['Items']
+            
+            while 'LastEvaluatedKey' in response:
+                query_params['ExclusiveStartKey'] = response['LastEvaluatedKey']
+                response = table.query(**query_params)
+                items.extend(response['Items'])
+            
+            return items
+            
+        except Exception as e:
+            print(f"Error querying DynamoDB: {str(e)}")
+            return []
 
 def load_config(config_file):
     try:
