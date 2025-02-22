@@ -1,0 +1,5 @@
+grpcio
+requests
+boto3
+chirpstack-api
+protobuf
