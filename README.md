@@ -1,10 +1,12 @@
 # MeterThing
-Just another repo to test out Chirpstack integration. My goal is to make a python rest API
+
+This Repository contains the code used to build my MeterThing website. It includes both the backend written in python using FastAPI and the frontend built with svelte. This README is used to explain how everything fits together and how to run the project.
 
 # HOW TO RUN
 
 ## Install Fast API endpoint:
 `cd backend`
+`pip install -r requirements.txt`
 `pip install fastapi uvicorn`
 
 ## Start the Fast API endpoint:
@@ -16,11 +18,11 @@ Just another repo to test out Chirpstack integration. My goal is to make a pytho
 
 I'll help you understand how your code works by breaking down the flow from backend to frontend. Let me explain the entire system architecture and how data moves through it.
 
-# Understanding Your ChirpStack Integration: A Complete Overview
+# Understanding ChirpStack Integration: A Complete Overview
 
 ### The Backend Foundation: FastAPI and ChirpStack Client
 
-Your backend system starts with two main Python files: `app.py` and `chirpstack_client.py`. The `app.py` file creates a FastAPI endpoint that serves as a bridge between your frontend and the ChirpStack server.
+The backend system starts with two main Python files: `app.py` and `chirpstack_client.py`. The `app.py` file creates a FastAPI endpoint that serves as a bridge between your frontend and the ChirpStack server.
 
 When a request comes to `/api/devices/list`, your FastAPI server:
 1. Loads configuration from `chirpstack_config.json`
@@ -33,7 +35,7 @@ The `ChirpStackClient` class in `chirpstack_client.py` handles the low-level com
 
 ### The Frontend Architecture: Svelte and Stores
 
-Your frontend uses Svelte's powerful store system to manage device data. Here's how the data flows:
+Your frontend uses Svelte's store system to manage device data. Here's how the data flows:
 
 1. The `deviceStore.ts` file creates a custom store using Svelte's `writable` store:
 ```typescript
