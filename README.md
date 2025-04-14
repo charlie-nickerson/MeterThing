@@ -2,6 +2,59 @@
 
 This Repository contains the code used to build my MeterThing website. It includes both the backend written in python using FastAPI and the frontend built with svelte. This README is used to explain how everything fits together and how to run the project.
 
+# ChirpStack API Credentials Setup Tutorial
+
+This tutorial will guide you through the process of setting up your API credentials file for ChirpStack, which is necessary for interacting with the ChirpStack API programmatically.
+
+## Prerequisites
+
+- Access to a ChirpStack server instance
+- Administrative permissions to create API keys
+- Basic knowledge of JSON file format
+
+## Step 1: Create an API Key in ChirpStack
+
+1. Log in to your ChirpStack web interface
+2. Navigate to **API Keys** section (usually found under your user profile or in the administration panel)
+3. Click on **Add API Key**
+4. Enter a name for your API key (e.g., "My Application Integration")
+5. Select the appropriate access rights for your needs
+6. Click **Create API Key**
+7. **Important**: Copy the generated API token immediately, as it will only be shown once
+
+## Step 2: Create Your Configuration File
+
+1. Create a new file named `chirpstack_config.json` in your project directory
+2. Open the file in a text editor
+3. Add the following JSON structure:
+
+```json
+{
+    "server_address": "[SERVER_IP_OR_HOSTNAME]:[PORT]",
+    "api_token": "[YOUR_API_TOKEN]",
+    "tenant_id": "[YOUR_TENANT_ID]",
+    "application_id": "[YOUR_APPLICATION_ID]",
+    "device_eui": "[YOUR_DEVICE_EUI]"
+}
+```
+
+## Step 3: Fill in Your Configuration Details
+
+Replace the placeholders with your actual values:
+
+- **server_address**: The IP address or hostname of your ChirpStack server, including the port number
+- **api_token**: The API token generated in Step 1
+- **tenant_id**: Your tenant ID (found in the ChirpStack web interface under Tenants)
+- **application_id**: The ID of the application you want to work with (found under Applications)
+- **device_eui**: The EUI of your LoRaWAN device
+
+
+## Additional Resources
+
+- [ChirpStack Documentation](https://www.chirpstack.io/docs/)
+- [ChirpStack API Reference](https://www.chirpstack.io/docs/chirpstack/api/index.html)
+- [LoRaWAN Device Management Best Practices](https://www.chirpstack.io/docs/guides/device-management.html)
+
 # HOW TO RUN
 
 ## Install Fast API endpoint:
