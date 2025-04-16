@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from chirpstack_client import ChirpStackClient, load_config
 from datetime import datetime
+from pydantic import BaseModel
+from typing import Dict, Optional
 
 
 
