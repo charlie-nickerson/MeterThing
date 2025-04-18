@@ -11,7 +11,7 @@ This tutorial will guide you through the process of setting up your API credenti
 - Access to a ChirpStack server instance
 - Administrative permissions to create API keys
 - Basic knowledge of JSON file format
-
+- Must have Node JS version 22.14.0 or higher installed
 ## Step 1: Create an API Key in ChirpStack
 
 1. Log in to your ChirpStack web interface
@@ -63,6 +63,7 @@ Replace the placeholders with your actual values:
 `pip install fastapi uvicorn`
 
 ## Start the Fast API endpoint:
+`cd backend`
 `uvicorn app:app --reload --port 8000`
 
 ## Run the server
