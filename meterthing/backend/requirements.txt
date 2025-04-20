@@ -3,3 +3,5 @@ requests
 boto3
 chirpstack-api
 protobuf
+fastapi
+uvicorn
