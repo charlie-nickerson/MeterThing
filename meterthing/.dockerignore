@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+.coverage
+.tox/
+.pytest_cache/

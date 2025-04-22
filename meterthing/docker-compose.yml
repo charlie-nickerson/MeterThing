@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend-dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./chirpstack_config.json:/app/chirpstack_config.json
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - meterthing-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend-dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./meterthing:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+    networks:
+      - meterthing-network
+
+networks:
+  meterthing-network:
+    driver: bridge
