@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../backend-dockerfile
+    container_name: meterthing-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/chirpstack_config.json:/app/chirpstack_config.json
+      - ./backend/credentials.json:/app/credentials.json
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - meterthing-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend-dockerfile
+    container_name: meterthing-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+    networks:
+      - meterthing-network
+
+networks:
+  meterthing-network:
+    driver: bridge
