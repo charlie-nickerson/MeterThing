@@ -1,15 +1,15 @@
-version: '3.8'
-
 services:
   backend:
     build:
-      context: .
-      dockerfile: ./backend-dockerfile
+      context: ./backend
+      dockerfile: ../backend-dockerfile
+    container_name: meterthing-backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./chirpstack_config.json:/app/chirpstack_config.json
+      - ./backend/chirpstack_config.json:/app/chirpstack_config.json
+      - ./backend/credentials.json:/app/credentials.json
     environment:
       - PYTHONUNBUFFERED=1
     networks:
@@ -19,10 +19,11 @@ services:
     build:
       context: .
       dockerfile: ./frontend-dockerfile
+    container_name: meterthing-frontend
     ports:
       - "5173:5173"
     volumes:
-      - ./meterthing:/app
+      - ./:/app
       - /app/node_modules
     depends_on:
       - backend
