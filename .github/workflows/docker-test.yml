@@ -18,14 +18,16 @@ jobs:
     
     - name: Create config files from secrets
       run: |
-        mkdir -p ./backend
-        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > ./backend/chirpstack_config.json
-        echo '${{ secrets.CREDENTIALS_JSON }}' > ./backend/credentials.json
+        # Create config files in the correct location
+        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > MeterThing/meterthing/backend/chirpstack_config.json
+        echo '${{ secrets.CREDENTIALS_JSON }}' > MeterThing/meterthing/backend/credentials.json
       
     - name: Build and start containers
-      # Use 'docker compose' instead of 'docker-compose'
-      run: docker compose up -d
-      
+      working-directory: MeterThing
+      run: |
+        # Run docker compose from the proper directory
+        docker compose -f docker-compose.yml up -d
+        
     - name: Wait for services to start
       run: |
         echo "Waiting for services to start up..."
@@ -56,10 +58,13 @@ jobs:
         
     - name: Collect logs if failure
       if: failure()
+      working-directory: MeterThing
       run: |
         echo "Collecting container logs for debugging..."
         docker compose logs
         
     - name: Stop containers
       if: always()
-      run: docker compose down
+      working-directory: MeterThing
+      run: |
+        docker compose down
