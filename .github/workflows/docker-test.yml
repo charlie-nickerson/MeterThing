@@ -20,21 +20,19 @@ jobs:
         pwd
         echo "Repository root contents:"
         ls -la
-        echo "MeterThing directory contents (if exists):"
-        ls -la MeterThing || echo "MeterThing directory not found"
    
     - name: Create config files from secrets
       run: |
         # Create the config files in the correct location
-        mkdir -p ./MeterThing/meterthing/backend
-        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > ./MeterThing/meterthing/backend/chirpstack_config.json
-        echo '${{ secrets.CREDENTIALS_JSON }}' > ./MeterThing/meterthing/backend/credentials.json
+        mkdir -p ./meterthing/backend
+        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > ./meterthing/backend/chirpstack_config.json
+        echo '${{ secrets.CREDENTIALS_JSON }}' > ./meterthing/backend/credentials.json
         
         # Verify files were created
-        ls -la ./MeterThing/meterthing/backend/
+        ls -la ./meterthing/backend/
      
     - name: Build and start containers
-      working-directory: ./MeterThing/meterthing
+      working-directory: ./meterthing
       run: |
         # Run docker compose from the correct directory
         docker compose up -d
@@ -76,6 +74,6 @@ jobs:
        
     - name: Stop containers
       if: always()
-      working-directory: ./MeterThing/meterthing
+      working-directory: ./meterthing
       run: |
         docker compose down
