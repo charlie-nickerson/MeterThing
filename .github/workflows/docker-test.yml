@@ -23,7 +23,8 @@ jobs:
         echo '${{ secrets.CREDENTIALS_JSON }}' > ./backend/credentials.json
       
     - name: Build and start containers
-      run: docker-compose up -d
+      # Use 'docker compose' instead of 'docker-compose'
+      run: docker compose up -d
       
     - name: Wait for services to start
       run: |
@@ -51,16 +52,14 @@ jobs:
     - name: Run integration tests
       run: |
         # Add your test commands here
-        # For example:
-        # npm test
         echo "Running integration tests..."
         
     - name: Collect logs if failure
       if: failure()
       run: |
         echo "Collecting container logs for debugging..."
-        docker-compose logs
+        docker compose logs
         
     - name: Stop containers
       if: always()
-      run: docker-compose down
+      run: docker compose down
