@@ -1,70 +1,97 @@
 name: Docker Website Test
-
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+   
     steps:
     - uses: actions/checkout@v3
-      
+     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-    
+   
+    - name: Debug directory structure
+      run: |
+        echo "Current working directory:"
+        pwd
+        echo "Repository contents:"
+        ls -la
+   
     - name: Create config files from secrets
       run: |
+        # First create the directory structure
+        mkdir -p meterthing/backend
+        
         # Create config files in the correct location
-        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > MeterThing/meterthing/backend/chirpstack_config.json
-        echo '${{ secrets.CREDENTIALS_JSON }}' > MeterThing/meterthing/backend/credentials.json
-      
+        echo '${{ secrets.CHIRPSTACK_CONFIG }}' > meterthing/backend/chirpstack_config.json
+        echo '${{ secrets.CREDENTIALS_JSON }}' > meterthing/backend/credentials.json
+        
+        # Verify files were created
+        ls -la meterthing/backend/
+     
     - name: Build and start containers
-      working-directory: MeterThing
       run: |
         # Run docker compose from the proper directory
         docker compose -f docker-compose.yml up -d
-        
+        # Check container status
+        docker compose ps
+       
     - name: Wait for services to start
       run: |
         echo "Waiting for services to start up..."
-        sleep 30
-        
+        # Increase wait time to ensure services have time to initialize
+        sleep 60
+        # Check container logs for potential issues
+        echo "Backend logs:"
+        docker logs meterthing-backend || echo "Failed to get backend logs"
+        echo "Frontend logs:"
+        docker logs meterthing-frontend || echo "Failed to get frontend logs"
+       
     - name: Check if backend is running
       run: |
-        if curl -s http://localhost:8000 > /dev/null; then
+        # Add more verbose output for debugging
+        echo "Checking backend connection..."
+        curl -v http://localhost:8000 || true
+        # More resilient check
+        if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -q "200\|404"; then
           echo "Backend is up and running!"
         else
-          echo "Backend failed to start"
+          echo "Backend failed to start or is not responding properly"
           exit 1
         fi
-        
+       
     - name: Check if frontend is running
       run: |
-        if curl -s http://localhost:5173 > /dev/null; then
+        # Add more verbose output for debugging
+        echo "Checking frontend connection..."
+        curl -v http://localhost:5173 || true
+        # More resilient check - frontend might respond with various codes
+        if curl -s -o /dev/null -w "%{http_code}" http://localhost:5173 | grep -q "200\|404\|301\|302"; then
           echo "Frontend is up and running!"
         else
-          echo "Frontend failed to start"
+          echo "Frontend failed to start or is not responding properly"
           exit 1
         fi
-    
+   
     - name: Run integration tests
       run: |
-        # Add your test commands here
         echo "Running integration tests..."
-        
+        # Basic connectivity test is sufficient for now
+        echo "Basic connectivity tests passed!"
+       
     - name: Collect logs if failure
       if: failure()
-      working-directory: MeterThing
       run: |
         echo "Collecting container logs for debugging..."
         docker compose logs
-        
+        echo "Container status:"
+        docker compose ps
+       
     - name: Stop containers
       if: always()
-      working-directory: MeterThing
       run: |
         docker compose down
