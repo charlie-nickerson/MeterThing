@@ -33,9 +33,62 @@ class ChirpStackClient:
             print(f"Error loading AWS credentials: {str(e)}")
             raise
 
-    def create_device(self, application_id, device_profile_id, name, dev_eui, description=""):
-        # Your existing method
-        pass
+    def create_device(self, application_id=None, device_profile_id=None, name=None, dev_eui=None, 
+                 description="", join_eui="0000000000000000", is_disabled=False, 
+                 skip_fcnt_check=True, tags=None, variables=None):
+        """
+        Create a new device in ChirpStack
+        
+        Args:
+            application_id (str): Application ID (defaults to self.application_id if not provided)
+            device_profile_id (str): Device profile ID
+            name (str): Device name
+            dev_eui (str): Device EUI (64-bit identifier in hexadecimal)
+            description (str, optional): Device description
+            join_eui (str, optional): Join EUI (defaults to zeros)
+            is_disabled (bool, optional): Whether the device is disabled
+            skip_fcnt_check (bool, optional): Skip frame counter check
+            tags (dict, optional): Device tags
+            variables (dict, optional): Device variables
+            
+        Returns:
+            object: Created device response
+        """
+        if not application_id:
+            application_id = self.application_id
+            
+        if not dev_eui or not name or not device_profile_id:
+            raise ValueError("device_profile_id, name, and dev_eui are required")
+        
+        try:
+            channel = grpc.insecure_channel(self.server_address)
+            client = api.DeviceServiceStub(channel)
+            metadata = [("authorization", f"Bearer {self.api_token}")]
+            
+            # Prepare device request data
+            device_data = {
+                "applicationId": application_id,
+                "description": description,
+                "devEui": dev_eui,
+                "deviceProfileId": device_profile_id,
+                "isDisabled": is_disabled,
+                "joinEui": join_eui,
+                "name": name,
+                "skipFcntCheck": skip_fcnt_check,
+                "tags": tags or {},
+                "variables": variables or {}
+            }
+            
+            # Create the request object
+            req = api.CreateDeviceRequest()
+            req.device.MergeFrom(ParseDict(device_data, api.Device()))
+            
+            # Make the API call
+            resp = client.Create(req, metadata=metadata)
+            return resp
+        except Exception as e:
+            print(f"Error creating device: {str(e)}")
+            raise
 
     def delete_device(self, dev_eui):
         # Your existing method
